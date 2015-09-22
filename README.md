@@ -4,12 +4,19 @@ I`m inspired [JailBrokenDector](https://github.com/0dayZh/JailbrokenDetector) Pr
 
 ### How to use it
 
+	// using do-try-catch
 	do {
 		try MOJailBrokenDector.isBroken()
 	} catch JailBrokenError.Detected(let fileName) {
 		print("Device is broken : \(fileName)")
 	} catch {
 		print("Error : \(error)")
+	}
+
+	// using guard
+	guard let isBroken: Bool? = try? MOJailBrokenDector.isBroken() where isBroken != nil else {
+	    print("Device is broken")
+	    return;
 	}
 
 ### But..
