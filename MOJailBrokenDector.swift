@@ -47,11 +47,9 @@ public class MOJailBrokenDector {
 
     class private func isOpenFile(fileName: String) throws -> Bool {
         let file = fopen(fileName, "r")
-        if file != nil {
-            defer { fclose(file) }
-            throw JailBrokenError.Detected(fileName: fileName)
-        }
-        return false
+        if file == nil { return false }
+        defer { fclose(file) }
+        throw JailBrokenError.Detected(fileName: fileName)
     }
 
     class private func isWriteToFile(fileName: String) throws -> Bool {
