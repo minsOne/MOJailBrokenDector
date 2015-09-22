@@ -8,15 +8,15 @@
 
 import Foundation
 
-enum JailBrokenError: ErrorType {
-    case Detected
-}
-
 #if (arch(i386) || arch(x86_64)) && os(iOS)
 let DEVICE_IS_SIMULATOR = true
     #else
 let DEVICE_IS_SIMULATOR = false
 #endif
+
+enum JailBrokenError: ErrorType {
+    case Detected(fileName: String)
+}
 
 public class MOJailBrokenDector {
     class func isBroken() throws -> Bool {
@@ -40,7 +40,7 @@ public class MOJailBrokenDector {
 
     class private func isFileExistsAtPath(fileName: String) throws -> Bool {
         if NSFileManager.defaultManager().fileExistsAtPath(fileName) {
-            throw JailBrokenError.Detected
+            throw JailBrokenError.Detected(fileName: fileName)
         }
         return false
     }
@@ -49,7 +49,7 @@ public class MOJailBrokenDector {
         let file = fopen(fileName, "r")
         if file != nil {
             defer { fclose(file) }
-            throw JailBrokenError.Detected
+            throw JailBrokenError.Detected(fileName: fileName)
         }
         return false
     }
@@ -57,7 +57,7 @@ public class MOJailBrokenDector {
     class private func isWriteToFile(fileName: String) throws -> Bool {
         do {
             try "This is a test.".writeToFile(fileName, atomically: true, encoding: NSUTF8StringEncoding)
-            throw JailBrokenError.Detected
+            throw JailBrokenError.Detected(fileName: fileName)
         } catch {
             return false
         }

@@ -6,8 +6,10 @@ I`m inspired [JailBrokenDector](https://github.com/0dayZh/JailbrokenDetector) Pr
 
 	do {
 		try MOJailBrokenDector.isBroken()
+	} catch JailBrokenError.Detected(let fileName) {
+		print("Device is broken : \(fileName)")
 	} catch {
-		print("Device is Broken", error)
+		print("Error : \(error)")
 	}
 
 ### But..
