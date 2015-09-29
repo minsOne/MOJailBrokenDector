@@ -21,4 +21,4 @@ I`m inspired [JailBrokenDector](https://github.com/0dayZh/JailbrokenDetector) Pr
 
 ### But..
 
-I don`t have jail broken device.. then, I didn`t test real device.
+I don't have jail broken device.. then, I didn`t test real device.

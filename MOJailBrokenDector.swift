@@ -9,55 +9,57 @@
 import Foundation
 
 #if (arch(i386) || arch(x86_64)) && os(iOS)
-let DEVICE_IS_SIMULATOR = true
+private let DEVICE_IS_SIMULATOR = false
     #else
-let DEVICE_IS_SIMULATOR = false
+private let DEVICE_IS_SIMULATOR = false
 #endif
 
 enum JailBrokenError: ErrorType {
     case Detected(fileName: String)
 }
 
+private let checkList = [
+    "/Applications/Cydia.app",
+    "/Library/MobileSubstrate/MobileSubstrate.dylib",
+    "/bin/bash",
+    "/usr/sbin/sshd",
+    "/etc/apt",
+    "/private/var/lib/apt/"
+];
+
 public class MOJailBrokenDector {
     class func isBroken() throws -> Bool {
         if DEVICE_IS_SIMULATOR { return false }
 
-        try isFileExistsAtPath("/Applications/Cydia.app")
-        try isFileExistsAtPath("/Library/MobileSubstrate/MobileSubstrate.dylib")
-        try isFileExistsAtPath("/bin/bash")
-        try isFileExistsAtPath("/usr/sbin/sshd")
-        try isFileExistsAtPath("/etc/apt")
-        try isFileExistsAtPath("/private/var/lib/apt/")
-        try isOpenFile("/bin/bash")
-        try isOpenFile("/Applications/Cydia.app")
-        try isOpenFile("/Library/MobileSubstrate/MobileSubstrate.dylib")
-        try isOpenFile("/usr/sbin/sshd")
-        try isOpenFile("/etc/apt")
+        try isFileExistsAtPaths(checkList)
+        try isOpenFiles(checkList)
         try isWriteToFile("/private/jailbreak.txt")
 
         return false
     }
 
-    class private func isFileExistsAtPath(fileName: String) throws -> Bool {
-        if NSFileManager.defaultManager().fileExistsAtPath(fileName) {
-            throw JailBrokenError.Detected(fileName: fileName)
+    class private func isFileExistsAtPaths(fileNames: [String]) throws {
+        try fileNames.forEach {
+            if NSFileManager.defaultManager().fileExistsAtPath($0) {
+                throw JailBrokenError.Detected(fileName: $0)
+            }
         }
-        return false
     }
 
-    class private func isOpenFile(fileName: String) throws -> Bool {
-        let file = fopen(fileName, "r")
-        if file == nil { return false }
-        defer { fclose(file) }
-        throw JailBrokenError.Detected(fileName: fileName)
+    class private func isOpenFiles(fileNames: [String]) throws {
+        try fileNames.forEach {
+            let file = fopen($0, "r")
+            if file != nil {
+                defer { fclose(file) }
+                throw JailBrokenError.Detected(fileName: $0)
+            }
+        }
     }
 
-    class private func isWriteToFile(fileName: String) throws -> Bool {
+    class private func isWriteToFile(fileName: String) throws {
         do {
             try "This is a test.".writeToFile(fileName, atomically: true, encoding: NSUTF8StringEncoding)
             throw JailBrokenError.Detected(fileName: fileName)
-        } catch {
-            return false
         }
     }
 }
