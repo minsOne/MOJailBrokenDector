@@ -9,7 +9,7 @@
 import Foundation
 
 #if (arch(i386) || arch(x86_64)) && os(iOS)
-private let DEVICE_IS_SIMULATOR = false
+private let DEVICE_IS_SIMULATOR = true
     #else
 private let DEVICE_IS_SIMULATOR = false
 #endif
