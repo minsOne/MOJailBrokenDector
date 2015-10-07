@@ -14,7 +14,7 @@ I`m inspired [JailBrokenDector](https://github.com/0dayZh/JailbrokenDetector) Pr
 	}
 
 	// using guard
-	guard let isBroken = try? MOJailBrokenDector.isBroken() where isBroken == false else {
+	guard let isBroken = try? MOJailBrokenDector.isBroken() else {
 	    print("Device is broken")
 	    return;
 	}
